@@ -1,0 +1,62 @@
+data Cliente = Cliente { nombre::String
+						,resistencia::Int
+						,amigos::[Amigo]} deriving(Show,Eq)
+
+data Amigo = Amigo Cliente deriving(Show,Eq)
+
+
+rodri = Cliente "Rodri" 55 []
+marcos = Cliente "Marcos" 40 [Amigo rodri]
+cristian = Cliente "Cristian" 2 []
+ana = Cliente "Ana" 120 [Amigo marcos,Amigo rodri]
+
+grogXD::Cliente->Cliente
+grogXD (Cliente name _ friends) = Cliente name 0 friends
+
+jarraLoca::Cliente->Cliente
+jarraLoca (Cliente name stamina friends) = Cliente name (bajarResistencia 10 stamina) friends
+-- Falta que afecte a los amigos
+
+klusener::String->Cliente->Cliente
+klusener sabor (Cliente name stamina friends) = Cliente name (bajarResistencia (length sabor) stamina) friends 
+
+tintico::Cliente->Cliente
+tintico (Cliente name stamina friends) = Cliente name (subirResistencia (5 * length friends) stamina) friends
+
+soda::Int->Cliente->Cliente
+soda fuerza (Cliente name stamina friends) = Cliente (agregarERP fuerza name) stamina friends
+
+rescatarse::Int-> Cliente ->Cliente
+
+rescatarse hora (Cliente name stamina friends) 
+	| hora > 3 = Cliente name (stamina+200) friends
+	| otherwise = Cliente name (stamina+100) friends
+
+
+agregarERP::Int->String->String
+agregarERP fuerza nombre = "e"++concat(replicate fuerza "r")++"p"++nombre
+
+bajarResistencia::Int->Int -> Int
+bajarResistencia disminuir resistencia = resistencia - disminuir
+
+subirResistencia::Int->Int-> Int
+subirResistencia subir resistencia = resistencia + subir
+
+
+comoEsta::Cliente->String
+comoEsta (Cliente name stamina friends)
+	| stamina > 50 = "fresco"
+	| stamina <= 50 && length(friends) > 1 = "piola"
+	| otherwise = "duro"
+
+
+agregarAmigo::Cliente->Cliente->Cliente
+agregarAmigo (Cliente name stamina friends) (Cliente name2 stamina2 friends2) 
+	| puedeAgregar (Cliente name stamina friends) (Cliente name2 stamina2 friends2) = Cliente name stamina (friends ++[Amigo (Cliente name2 stamina2 friends2)])
+	| otherwise = Cliente name stamina friends
+
+puedeAgregar:: Cliente -> Cliente-> Bool
+puedeAgregar (Cliente name stamina friends) (Cliente name2 stamina2 friends2)
+ 	| name == name2 = False
+ 	| elem (Amigo (Cliente name2 stamina2 friends2)) (friends) = False
+ 	| otherwise = True
